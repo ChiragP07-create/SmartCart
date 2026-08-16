@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>SmartCart | SQL-Powered Shopping</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- NAVBAR -->
+
+    <nav class="navbar">
+
+        <div class="logo">
+            🛒 SmartCart
+        </div>
+
+        <div class="nav-links">
+
+            <a href="#home">Home</a>
+            <a href="#products">Products</a>
+            <a href="#insights">Insights</a>
+
+            <button onclick="showCart()">
+                🛒 Cart
+                <span id="cartCount">0</span>
+            </button>
+
+        </div>
+
+    </nav>
+
+
+    <!-- HERO -->
+
+    <section class="hero" id="home">
+
+        <div class="hero-content">
+
+            <span class="badge">
+                SQL-POWERED E-COMMERCE
+            </span>
+
+            <h1>
+                Shop Smarter.<br>
+                <span>Powered by Data.</span>
+            </h1>
+
+            <p>
+                A smarter shopping experience powered by
+                relational data, SQL analytics and personalized insights.
+            </p>
+
+            <button class="primary-btn" onclick="document.getElementById('products').scrollIntoView()">
+
+                Explore Products →
+
+            </button>
+
+        </div>
+
+        <div class="hero-card">
+
+            <div class="floating-icon">
+                🧠
+            </div>
+
+            <h3>
+                Smart Recommendation
+            </h3>
+
+            <p>
+                Customers who bought
+                <strong>Wireless Earbuds</strong>
+                also bought
+                <strong>USB-C Cable</strong>.
+            </p>
+
+            <div class="recommendation">
+                68% purchase together
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- STATS -->
+
+    <section class="stats">
+
+        <div>
+            <h2 id="customerStat">—</h2>
+            <p>Customers</p>
+        </div>
+
+        <div>
+            <h2 id="orderStat">—</h2>
+            <p>Orders</p>
+        </div>
+
+        <div>
+            <h2 id="revenueStat">—</h2>
+            <p>Total Revenue</p>
+        </div>
+
+    </section>
+
+
+    <!-- PRODUCTS -->
+
+    <section class="products-section" id="products">
+
+        <div class="section-heading">
+
+            <div>
+                <span class="section-label">
+                    SHOP
+                </span>
+
+                <h2>
+                    Popular Products
+                </h2>
+            </div>
+
+            <p>
+                Real-time products loaded directly
+                from our MySQL database.
+            </p>
+
+        </div>
+
+        <div id="productsContainer" class="products-grid">
+
+            <div class="loading">
+                Loading products...
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- INSIGHTS -->
+
+    <section class="insights" id="insights">
+
+        <div class="section-heading">
+
+            <div>
+
+                <span class="section-label">
+                    INTELLIGENCE
+                </span>
+
+                <h2>
+                    SQL Shopping Intelligence
+                </h2>
+
+            </div>
+
+        </div>
+
+
+        <div class="insight-grid">
+
+            <div class="insight-card">
+
+                <div class="icon">
+                    📦
+                </div>
+
+                <h3>
+                    Inventory Alerts
+                </h3>
+
+                <p>
+                    SQL identifies products
+                    approaching critical stock levels.
+                </p>
+
+                <button onclick="showLowStock()">
+                    View Low Stock →
+                </button>
+
+            </div>
+
+
+            <div class="insight-card">
+
+                <div class="icon">
+                    🏆
+                </div>
+
+                <h3>
+                    Top Customers
+                </h3>
+
+                <p>
+                    Identify high-value customers
+                    using SQL aggregation.
+                </p>
+
+                <button onclick="showTopCustomers()">
+                    View Customers →
+                </button>
+
+            </div>
+
+
+            <div class="insight-card">
+
+                <div class="icon">
+                    🔗
+                </div>
+
+                <h3>
+                    Smart Recommendations
+                </h3>
+
+                <p>
+                    Product relationships discovered
+                    using SQL JOINs.
+                </p>
+
+                <button onclick="showRecommendations()">
+                    Explore →
+                </button>
+
+            </div>
+        </div> <!-- Recommendations card -->
+
+
+        <!-- REVENUE ANALYTICS -->
+
+        <div class="insight-card">
+
+            <div class="icon">
+                💰
+            </div>
+
+            <h3>
+                Revenue Analytics
+            </h3>
+
+            <p>
+                Analyze total revenue, orders
+                and average order value using SQL.
+            </p>
+
+            <button onclick="showRevenue()">
+                View Revenue →
+            </button>
+
+        </div>
+        <!-- ORDER HISTORY -->
+
+        <div class="insight-card">
+
+            <div class="icon">
+                🧾
+            </div>
+
+            <h3>
+                Order History
+            </h3>
+
+            <p>
+                View recent orders and their
+                purchased products using SQL JOINs.
+            </p>
+
+            <button onclick="showOrderHistory()">
+                View Orders →
+            </button>
+
+        </div>
+
+
+        </div> <!-- insight-grid -->
+
+    </section>
+
+
+
+
+    <!-- CART / CHECKOUT MODAL -->
+
+    <div id="cartModal" class="modal hidden">
+
+        <div class="checkout-box">
+
+            <!-- HEADER -->
+
+            <div class="checkout-header">
+
+                <div>
+                    <span class="section-label">SMARTCART</span>
+                    <h2>Your Cart</h2>
+                </div>
+
+                <button class="close" onclick="closeCart()">
+                    ×
+                </button>
+
+            </div>
+
+
+            <!-- CHECKOUT CONTENT -->
+
+            <div class="checkout-body">
+
+                <!-- CART ITEMS -->
+
+                <div class="cart-section">
+
+                    <h3>🛒 Items in your cart</h3>
+
+                    <div id="cartItems">
+                        Your cart is empty.
+                    </div>
+
+                </div>
+
+
+                <!-- CUSTOMER DETAILS -->
+
+                <div class="checkout-details">
+
+                    <h3>Checkout Details</h3>
+
+                    <label>Full Name</label>
+                    <label for="checkoutEmail">Email</label>
+
+                    <input type="email" id="checkoutEmail" placeholder="Enter your email">
+                    <label for="checkoutPhone">Phone</label>
+
+                    <input type="tel" id="checkoutPhone" placeholder="Enter your phone number">
+                    <label for="checkoutCity">City</label>
+
+                    <input type="text" id="checkoutCity" placeholder="Enter your city">
+
+                    <input type="text" id="customerName" placeholder="Enter your name">
+
+
+                    <label>Delivery Address</label>
+
+                    <textarea id="customerAddress" placeholder="Enter your delivery address"></textarea>
+
+
+                    <label>Payment Method</label>
+
+                    <div class="payment-options">
+
+                        <label class="payment-option">
+
+                            <input type="radio" name="payment" value="UPI" checked>
+
+                            <span>📱 UPI</span>
+
+                        </label>
+
+
+                        <label class="payment-option">
+
+                            <input type="radio" name="payment" value="Card">
+
+                            <span>💳 Card</span>
+
+                        </label>
+
+
+                        <label class="payment-option">
+
+                            <input type="radio" name="payment" value="COD">
+
+                            <span>💵 Cash on Delivery</span>
+
+                        </label>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ORDER SUMMARY -->
+
+                <div class="order-summary">
+
+                    <h3>Order Summary</h3>
+
+                    <div id="summaryItems">
+                        No items
+                    </div>
+
+
+                    <div class="summary-row">
+
+                        <span>Subtotal</span>
+
+                        <strong id="checkoutSubtotal">
+                            ₹0
+                        </strong>
+
+                    </div>
+
+
+                    <div class="summary-row">
+
+                        <span>Delivery</span>
+
+                        <strong class="free">
+                            FREE
+                        </strong>
+
+                    </div>
+
+
+                    <div class="summary-total">
+
+                        <span>Total</span>
+
+                        <strong id="checkoutTotal">
+                            ₹0
+                        </strong>
+
+                    </div>
+
+
+                    <button class="place-order-btn" onclick="checkout()">
+
+                        🔒 Place Order
+
+                    </button>
+
+
+                    <p class="secure-text">
+                        🔐 Secure checkout • Powered by SmartCart
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+    <button class="primary-btn" onclick="checkout()">
+
+        Checkout →
+
+    </button>
+
+    </div>
+
+    </div>
+
+
+    <!-- FOOTER -->
+
+    <footer>
+
+        <div>
+            🛒 <strong>SmartCart</strong>
+        </div>
+
+        <p>
+            SQL-Powered E-Commerce Intelligence System
+        </p>
+
+        <span>
+            Built with HTML • CSS • JavaScript • Node.js • MySQL
+        </span>
+
+    </footer>
+
+    </div>
+
+
+    <!-- SQL INTELLIGENCE MODAL -->
+
+    <div id="insightModal" class="modal hidden">
+
+        <div class="insight-modal-box">
+
+            <div class="insight-modal-header">
+
+                <div>
+                    <span class="section-label">
+                        SMARTCART SQL
+                    </span>
+
+                    <h2 id="insightTitle">
+                        Inventory Alerts
+                    </h2>
+                </div>
+
+                <button class="close" onclick="document.getElementById('insightModal').classList.add('hidden')">
+                    ×
+                </button>
+
+            </div>
+
+            <div id="insightContent" class="insight-content">
+
+                Loading...
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <script src="app.js"></script>
+
+</body>
+
+</html>
