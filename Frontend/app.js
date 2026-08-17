@@ -1,5 +1,4 @@
-const API = "http://localhost:5000";
-
+const API = "https://awake-tenderness-production.up.railway.app";
 let products = [];
 
 let cart = [];
@@ -179,89 +178,138 @@ function updateCartCount() {
         .textContent = cart.length;
 }
 
-
 // SHOW CART
-
 function showCart() {
 
-    const modal =
-        document.getElementById("cartModal");
-
-    const container =
-        document.getElementById("cartItems");
+    const modal = document.getElementById("cartModal");
+    const container = document.getElementById("cartItems");
 
     if (cart.length === 0) {
 
-        container.innerHTML =
-            "<p>Your cart is empty.</p>";
+        container.innerHTML = `
+            <div style="text-align:center; padding:30px;">
+                <h3>Your cart is empty</h3>
+                <p>Add some products to your cart.</p>
+            </div>
+        `;
 
     } else {
 
-        container.innerHTML =
-            cart.map(item => `
-<div style="
-    color:#8996aa;
-    font-size:13px;
-    margin-top:8px;
-">
+        container.innerHTML = cart.map(item => {
 
-    ₹${Number(item.price).toLocaleString("en-IN")}
+            const quantity = Number(item.quantity || 1);
+            const price = Number(item.price);
+            const itemTotal = price * quantity;
 
-    <div style="
-        display:flex;
-        align-items:center;
-        gap:8px;
-        margin-top:8px;
-    ">
+            return `
+                <div style="
+                    padding:16px;
+                    margin-bottom:12px;
+                    border:1px solid #34405a;
+                    border-radius:10px;
+                ">
 
-        <button
-            onclick="window.changeCartQuantity(${item.product_id}, -1)"
-            style="
-                width:30px;
-                height:30px;
-                border:1px solid #34405a;
-                background:#182235;
-                color:white;
-                border-radius:6px;
-                cursor:pointer;
-            "
-        >
-            −
-        </button>
+                    <div style="
+                        display:flex;
+                        justify-content:space-between;
+                        align-items:center;
+                    ">
 
-        <span style="
-            min-width:25px;
-            text-align:center;
-            color:white;
-            font-weight:bold;
-        ">
-            ${item.quantity || 1}
-        </span>
+                        <div>
+                            <strong style="
+                                color:white;
+                                font-size:16px;
+                            ">
+                                ${item.product_name}
+                            </strong>
 
-        <button
-            onclick="window.changeCartQuantity(${item.product_id}, 1)"
-            style="
-                width:30px;
-                height:30px;
-                border:1px solid #34405a;
-                background:#182235;
-                color:white;
-                border-radius:6px;
-                cursor:pointer;
-            "
-        >
-            +
-        </button>
+                            <div style="
+                                color:#8996aa;
+                                margin-top:5px;
+                            ">
+                                ₹${price.toLocaleString("en-IN")} each
+                            </div>
+                        </div>
 
-    </div>
+                        <strong style="color:white;">
+                            ₹${itemTotal.toLocaleString("en-IN")}
+                        </strong>
 
-</div>
+                    </div>
 
-            `).join("");
+                    <div style="
+                        display:flex;
+                        align-items:center;
+                        gap:10px;
+                        margin-top:12px;
+                    ">
 
+                        <button
+                            onclick="window.changeCartQuantity(${item.product_id}, -1)"
+                            style="
+                                width:32px;
+                                height:32px;
+                                border:1px solid #34405a;
+                                background:#182235;
+                                color:white;
+                                border-radius:6px;
+                                cursor:pointer;
+                                font-size:18px;
+                            "
+                        >
+                            −
+                        </button>
+
+                        <span style="
+                            min-width:30px;
+                            text-align:center;
+                            color:white;
+                            font-weight:bold;
+                        ">
+                            ${quantity}
+                        </span>
+
+                        <button
+                            onclick="window.changeCartQuantity(${item.product_id}, 1)"
+                            style="
+                                width:32px;
+                                height:32px;
+                                border:1px solid #34405a;
+                                background:#182235;
+                                color:white;
+                                border-radius:6px;
+                                cursor:pointer;
+                                font-size:18px;
+                            "
+                        >
+                            +
+                        </button>
+
+                        <button
+                            onclick="window.removeFromCart(${item.product_id})"
+                            style="
+                                margin-left:10px;
+                                padding:7px 12px;
+                                border:none;
+                                background:#d9534f;
+                                color:white;
+                                border-radius:6px;
+                                cursor:pointer;
+                            "
+                        >
+                            Remove
+                        </button>
+
+                    </div>
+
+                </div>
+            `;
+
+        }).join("");
     }
 
     modal.classList.remove("hidden");
+
     // UPDATE ORDER SUMMARY
     const summaryItems =
         document.getElementById("summaryItems");
@@ -272,13 +320,10 @@ function showCart() {
     const summaryTotal =
         document.getElementById("checkoutTotal");
 
-
     if (cart.length === 0) {
 
         summaryItems.textContent = "No items";
-
         summarySubtotal.textContent = "₹0";
-
         summaryTotal.textContent = "₹0";
 
     } else {
@@ -286,13 +331,10 @@ function showCart() {
         let subtotal = 0;
 
         cart.forEach(item => {
-
             subtotal +=
                 Number(item.price) *
                 Number(item.quantity || 1);
-
         });
-
 
         summaryItems.innerHTML =
             cart.map(item => `
@@ -313,7 +355,6 @@ function showCart() {
                 </div>
             `).join("");
 
-
         summarySubtotal.textContent =
             `₹${subtotal.toLocaleString("en-IN")}`;
 
@@ -321,7 +362,6 @@ function showCart() {
             `₹${subtotal.toLocaleString("en-IN")}`;
     }
 }
-
 
 
 // CLOSE CART
