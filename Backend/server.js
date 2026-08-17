@@ -915,11 +915,10 @@ app.get("/api/insights/order-history", (req, res) => {
     });
 
 });
+const PORT = process.env.PORT || 5000;
 
-const PORT = 5000;
-
-app.listen(PORT, () => {
-    console.log(`🚀 SmartCart server running on http://localhost:${PORT}`);
+app.listen(PORT, "0.0.0.0", () => {
+    console.log(`🚀 SmartCart server running on port ${PORT}`);
 });
 
 // ==========================================

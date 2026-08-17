@@ -153,7 +153,10 @@ async function addToCart(productId) {
         }
 
         // Keep the item in the browser cart
-        cart.push(product);
+        cart.push({
+            ...product,
+            quantity: 1
+        });
 
         updateCartCount();
 
@@ -178,7 +181,6 @@ function updateCartCount() {
         .textContent = cart.length;
 }
 
-// SHOW CART
 function showCart() {
 
     const modal = document.getElementById("cartModal");
@@ -199,7 +201,7 @@ function showCart() {
 
             const quantity = Number(item.quantity || 1);
             const price = Number(item.price);
-            const itemTotal = price * quantity;
+            const total = price * quantity;
 
             return `
                 <div style="
@@ -232,7 +234,7 @@ function showCart() {
                         </div>
 
                         <strong style="color:white;">
-                            ₹${itemTotal.toLocaleString("en-IN")}
+                            ₹${total.toLocaleString("en-IN")}
                         </strong>
 
                     </div>
@@ -245,6 +247,7 @@ function showCart() {
                     ">
 
                         <button
+                            type="button"
                             onclick="window.changeCartQuantity(${item.product_id}, -1)"
                             style="
                                 width:32px;
@@ -256,9 +259,7 @@ function showCart() {
                                 cursor:pointer;
                                 font-size:18px;
                             "
-                        >
-                            −
-                        </button>
+                        >−</button>
 
                         <span style="
                             min-width:30px;
@@ -270,6 +271,7 @@ function showCart() {
                         </span>
 
                         <button
+                            type="button"
                             onclick="window.changeCartQuantity(${item.product_id}, 1)"
                             style="
                                 width:32px;
@@ -281,11 +283,10 @@ function showCart() {
                                 cursor:pointer;
                                 font-size:18px;
                             "
-                        >
-                            +
-                        </button>
+                        >+</button>
 
                         <button
+                            type="button"
                             onclick="window.removeFromCart(${item.product_id})"
                             style="
                                 margin-left:10px;
@@ -339,10 +340,8 @@ function showCart() {
         summaryItems.innerHTML =
             cart.map(item => `
                 <div class="summary-product">
-
                     <span>
-                        ${item.product_name}
-                        × ${item.quantity || 1}
+                        ${item.product_name} × ${item.quantity || 1}
                     </span>
 
                     <strong>
@@ -351,7 +350,6 @@ function showCart() {
                     Number(item.quantity || 1)
                 ).toLocaleString("en-IN")}
                     </strong>
-
                 </div>
             `).join("");
 
@@ -362,10 +360,6 @@ function showCart() {
             `₹${subtotal.toLocaleString("en-IN")}`;
     }
 }
-
-
-// CLOSE CART
-
 function closeCart() {
 
     document
@@ -906,12 +900,6 @@ window.checkout = async function checkout() {
 
 };
 
-console.error(error);
-
-alert(
-    "Checkout failed: " +
-    error.message
-);
 
 
 // ==========================================
