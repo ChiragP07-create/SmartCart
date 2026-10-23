@@ -46,10 +46,23 @@ function displayProducts() {
 
         card.innerHTML = `
 
-            <div class="product-image">
-    <img 
-        src="${product.image_url}" 
+       <div class="product-image">
+    <img
+        src="/images/${({
+                "Wireless Earbuds": "earbuds.jpg",
+                "Smartphone": "smartphone.jpg",
+                "Gaming Mouse": "gaming-mouse.jpg",
+                "Mechanical Keyboard": "keyboard.jpg",
+                "USB-C Cable": "usb-c-cable.jpg",
+                "Laptop Stand": "laptop-stand.jpg",
+                "Smart Watch": "smart-watch.jpg",
+                "Office Chair": "office-chair.jpg",
+                "Bluetooth Speaker": "speaker.jpg",
+                "Gaming Headset": "headphones.jpg"
+            })[product.product_name] || "earbuds.jpg"}"
         alt="${product.product_name}"
+        loading="lazy"
+        onerror="this.style.display='none'"
     >
 </div>
             <span class="category">
