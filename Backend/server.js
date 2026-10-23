@@ -27,6 +27,7 @@ app.get("/api/products", (req, res) => {
             p.price,
             p.stock,
             p.rating,
+            p.image_url,
             c.category_name
         FROM products p
         JOIN categories c
@@ -313,7 +314,55 @@ app.delete("/api/cart", (req, res) => {
     );
 
 });
+// ASSIGN TEMPORARY CART TO CUSTOMER
+app.put("/api/cart/assign", (req, res) => {
+    const fromCustomerId = Number(req.body.from_customer_id);
+    const toCustomerId = Number(req.body.to_customer_id);
 
+    if (
+        !Number.isInteger(fromCustomerId) ||
+        !Number.isInteger(toCustomerId) ||
+        fromCustomerId <= 0 ||
+        toCustomerId <= 0
+    ) {
+        return res.status(400).json({
+            error: "Valid customer IDs are required"
+        });
+    }
+
+    if (fromCustomerId === toCustomerId) {
+        return res.json({
+            success: true,
+            message: "Cart already belongs to this customer"
+        });
+    }
+
+    const sql = `
+        UPDATE cart
+        SET customer_id = ?
+        WHERE customer_id = ?
+    `;
+
+    db.query(
+        sql,
+        [toCustomerId, fromCustomerId],
+        (err, result) => {
+            if (err) {
+                console.error("Cart assignment failed:", err);
+
+                return res.status(500).json({
+                    error: "Could not assign cart to customer"
+                });
+            }
+
+            return res.json({
+                success: true,
+                message: "Cart assigned successfully",
+                itemsUpdated: result.affectedRows
+            });
+        }
+    );
+});
 // ADD / UPDATE CUSTOMER
 
 app.post("/api/customers", (req, res) => {
@@ -471,6 +520,55 @@ app.put("/api/customers/:customerId", (req, res) => {
             res.json({
                 success: true,
                 customer_id: Number(customerId)
+            });
+
+        }
+    );
+
+});
+
+// ASSIGN TEMPORARY CART TO CUSTOMER
+app.put("/api/cart/assign", (req, res) => {
+
+    const { from_customer_id, to_customer_id } = req.body;
+
+    if (!from_customer_id || !to_customer_id) {
+        return res.status(400).json({
+            error: "Customer IDs are required"
+        });
+    }
+
+    // If same customer, nothing needs to change
+    if (Number(from_customer_id) === Number(to_customer_id)) {
+        return res.json({
+            success: true,
+            message: "Cart already belongs to customer"
+        });
+    }
+
+    const sql = `
+        UPDATE cart
+        SET customer_id = ?
+        WHERE customer_id = ?
+    `;
+
+    db.query(
+        sql,
+        [to_customer_id, from_customer_id],
+        (err, result) => {
+
+            if (err) {
+                console.error(err);
+
+                return res.status(500).json({
+                    error: "Could not assign cart to customer"
+                });
+            }
+
+            res.json({
+                success: true,
+                message: "Cart assigned to customer",
+                updated_items: result.affectedRows
             });
 
         }
