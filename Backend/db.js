@@ -7,7 +7,6 @@ const db = mysql.createConnection({
     password: process.env.MYSQLPASSWORD,
     database: process.env.MYSQL_DATABASE || "smartcart",
 
-    // Enable TLS for TiDB Cloud
     ssl: process.env.MYSQL_SSL === "true"
         ? { minVersion: "TLSv1.2" }
         : undefined
