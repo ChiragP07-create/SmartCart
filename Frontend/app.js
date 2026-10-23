@@ -1,4 +1,4 @@
-const API = "https://awake-tenderness-production.up.railway.app";
+const API = "https://smartcart-yay2.onrender.com";
 let products = [];
 
 let cart = [];
@@ -21,7 +21,6 @@ async function loadProducts() {
     } catch (error) {
 
         console.error(error);
-
         document.getElementById("productsContainer").innerHTML =
             `<p>Unable to load products. Make sure the backend is running.</p>`;
     }
@@ -48,9 +47,11 @@ function displayProducts() {
         card.innerHTML = `
 
             <div class="product-image">
-                ${getProductIcon(product.category_name)}
-            </div>
-
+    <img 
+        src="${product.image_url}" 
+        alt="${product.product_name}"
+    >
+</div>
             <span class="category">
                 ${product.category_name}
             </span>
@@ -797,6 +798,18 @@ window.checkout = async function checkout() {
 
         const city =
             document.getElementById("checkoutCity").value.trim();
+        const phoneRegex = /^[6-9][0-9]{9}$/;
+        const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+        alert("EMAIL RECEIVED: " + email);
+        if (!phoneRegex.test(phone)) {
+            alert("Please enter a valid 10-digit mobile number.");
+            return;
+        }
+
+        if (!emailRegex.test(email)) {
+            alert("Please enter a valid email address, such as name@gmail.com");
+            return;
+        }
 
 
         if (!name || !email) {
@@ -806,12 +819,11 @@ window.checkout = async function checkout() {
             return;
         }
 
-
-        // UPDATE CUSTOMER #1
+        // CREATE OR FIND CUSTOMER
         const customerResponse = await fetch(
-            `${API}/api/customers/1`,
+            `${API}/api/customers`,
             {
-                method: "PUT",
+                method: "POST",
 
                 headers: {
                     "Content-Type": "application/json"
@@ -826,23 +838,45 @@ window.checkout = async function checkout() {
             }
         );
 
-
         const customerData =
             await customerResponse.json();
 
-
         if (!customerResponse.ok) {
-
             throw new Error(
                 customerData.error ||
                 "Could not save customer details"
             );
-
         }
 
+        // Use the actual customer ID returned by MySQL
+        const customerId = customerData.customer_id;
+        // Move the temporary cart from customer 1
+        // to the actual customer
+        const assignCartResponse = await fetch(
+            `${API}/api/cart/assign`,
+            {
+                method: "PUT",
 
-        // CUSTOMER 1 OWNS THE CURRENT CART
-        const customerId = 1;
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify({
+                    from_customer_id: 1,
+                    to_customer_id: customerId
+                })
+            }
+        );
+
+
+        const assignCartData = await assignCartResponse.json();
+
+        if (!assignCartResponse.ok) {
+            throw new Error(
+                assignCartData.error ||
+                "Could not assign cart to customer"
+            );
+        }
 
 
         // PLACE ORDER
@@ -885,6 +919,9 @@ window.checkout = async function checkout() {
         updateCartCount();
 
         closeCart();
+
+        // Refresh homepage statistics
+        await loadAnalytics();
 
 
     } catch (error) {
@@ -1142,10 +1179,10 @@ async function showOrderHistory() {
 
         });
 
-
         const orderList =
-            Object.values(orders);
-
+            Object.values(orders).sort(
+                (a, b) => b.order_id - a.order_id
+            );
 
         content.innerHTML = `
 
