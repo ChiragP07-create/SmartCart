@@ -19,21 +19,19 @@ app.get("/", (req, res) => {
 
 // GET ALL PRODUCTS
 app.get("/api/products", (req, res) => {
-
     const sql = `
-        SELECT
-            p.product_id,
-            p.product_name,
-            p.price,
-            p.stock,
-            p.rating,
-            p.image_url,
-            c.category_name
-        FROM products p
-        JOIN categories c
+    SELECT
+        p.product_id,
+        p.product_name,
+        p.price,
+        p.stock,
+        p.rating,
+        c.category_name
+    FROM products p
+    JOIN categories c
         ON p.category_id = c.category_id
-        ORDER BY p.product_id;
-    `;
+    ORDER BY p.product_id;
+`;
 
     db.query(sql, (err, results) => {
 
